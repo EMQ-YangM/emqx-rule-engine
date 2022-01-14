@@ -19,6 +19,7 @@
 -behaviour(gen_server).
 
 -include("rule_engine.hrl").
+-include_lib("emqx/include/logger.hrl").
 
 %% API functions
 -export([ start_link/0
@@ -325,6 +326,7 @@ handle_info(_Info, State) ->
     {noreply, State}.
 
 code_change({down, Vsn}, State = #state{metric_ids = MIDs}, _Extra) ->
+    ?LOG(error, "code_change down ~p", [Vsn]),
     case string:tokens(Vsn, ".") of
         ["4", "2", SVal] ->
             {Val, []} = string:to_integer(SVal),
@@ -370,6 +372,7 @@ code_change({down, Vsn}, State = #state{metric_ids = MIDs}, _Extra) ->
     end;
 
 code_change(Vsn, State = #state{metric_ids = MIDs}, _Extra) ->
+    ?LOG(error, "code_change up ~p", [Vsn]),
     case string:tokens(Vsn, ".") of
         ["4", "2", SVal] ->
             {Val, []} = string:to_integer(SVal),
